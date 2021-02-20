@@ -91,14 +91,14 @@ class TestDtconv < MiniTest::Test
         "12:34:56.789",
         "12:34:56.789am"
       ],
-      "01:02:03.000" => [
-        "01:02:03+09:00",
-        "1:2:3 am +09:00",
-        "1時2分3秒 +9:00",
-        "01時02分03秒+900",
-        "01時02分03秒JST",
-        "1:2:3 JST+0900",
-        "1:02:03 UTC+900"
+      "06:07:08.000" => [
+        "06:07:08+09:00",
+        "6:7:8 am +09:00",
+        "6時7分8秒 +9:00",
+        "06時07分08秒+900",
+        "06時07分08秒JST",
+        "6:7:8 JST+0900",
+        "6:07:08 UTC+900"
       ],
     }
   
@@ -127,7 +127,7 @@ class TestDtconv < MiniTest::Test
         "Jan 1 1970 00:00:00UTC"
       ],
       "1999-05-24 23:59:59.000 -08:00" => [
-        # "1999-05-24 23:59:59.000 -08:00",
+        "1999-05-24 23:59:59.000 -08:00",
         "24/05/1999 23:59:59 PST",
         "24 May, 1999 11:59:59.000p.m. PST",
       ]
@@ -139,6 +139,30 @@ class TestDtconv < MiniTest::Test
         assert_equal expected, @ch.output.chomp
       end
     end
+  end
+  
+  
+  def test_input_format
+    @ch.run("-p %y=%m=%d 01=02=03")
+    assert_match /^2001-02-03/, @ch.output.chomp
+  end
+  
+  
+  def test_output_format
+    @ch.run('-f "%Y/%m/%d %X" 1985-04-01 7:06:5pm')
+    assert_equal "1985/04/01 19:06:05", @ch.output.chomp
+    
+    @ch.run('-f "%Y/%m/%d %X [%:z]" 1985-04-01 7:06:5pm -16:00')
+    assert_equal "1985/04/01 19:06:05 [-16:00]", @ch.output.chomp
+    
+    @ch.run('-f "%Y/%m/%d %X [%:z]" 1985-04-01 7:06:5pm -1200')
+    assert_equal "1985/04/01 19:06:05 [-12:00]", @ch.output.chomp
+  end
+  
+  
+  def test_input_output_format
+    @ch.run('-p %y=%m=%d -f %Y/%m/%d 01=02=03')
+    assert_equal "2001/02/03", @ch.output.chomp
   end
 
 end

@@ -10,6 +10,16 @@ module Dtconv
   
     def opt_parse(argv)
       opts = {}
+#      input_opts = []
+#      while arg = argv.shift
+#        if arg.start_with?('-')
+#          input_opts.push(arg)
+#        else
+#         argv.unshift(arg)
+#          break
+#       end
+#      end
+      
       
       OptionParser.new do |opt|
         begin
@@ -22,7 +32,7 @@ module Dtconv
           opt.on('-f=OUTPUT_FORMAT',
             "Format of output string") {|v| opts[:f] = v}
           
-          opt.parse!(ARGV)
+          opt.order!(argv)
         rescue => e
           $stderr.puts "ERROR: #{e}.\n#{opt}"
           exit 1
