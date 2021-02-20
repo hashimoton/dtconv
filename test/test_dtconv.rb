@@ -9,8 +9,6 @@ class TestDtconv < MiniTest::Test
 
   def setup
     @ch = CommandHelper.new('../bin/dtconv')
-    utc_offset = Time.now.utc_offset
-    
   end
   
   def teardown
@@ -65,6 +63,40 @@ class TestDtconv < MiniTest::Test
       probes.each do |probe|
         @ch.run(probe)
         assert_match /^#{expected} 00:00:00.000 [+-]\d{2}:\d{2}$/, @ch.output
+      end
+    end
+  end
+  
+  
+  def test_time_only
+    test_times = {
+      "01:02:00.000" => [
+        "01:02:00",
+        "1:2 am",
+        "1時2分",
+        "01:2"
+      ],
+      "01:02:03.000" => [
+        "01:02:03",
+        "1:2:3 am",
+        "1時2分3秒",
+        "01時02分03秒"
+      ],
+      "13:24:36.000" => [
+        "13:24:36",
+        "1:24:36 pm",
+        "1:24:36 p.m."
+      ],
+      "12:34:56.789" => [
+        "12:34:56.789",
+        "12:34:56.789am"
+      ],
+    }
+  
+    test_times.each_pair do |expected, probes|
+      probes.each do |probe|
+        @ch.run(probe)
+        assert_match /^\d{4}-\d{2}-\d{2} #{expected} [+-]\d{2}:\d{2}$/, @ch.output
       end
     end
   end
