@@ -91,12 +91,52 @@ class TestDtconv < MiniTest::Test
         "12:34:56.789",
         "12:34:56.789am"
       ],
+      "01:02:03.000" => [
+        "01:02:03+09:00",
+        "1:2:3 am +09:00",
+        "1時2分3秒 +9:00",
+        "01時02分03秒+900",
+        "01時02分03秒JST",
+        "1:2:3 JST+0900",
+        "1:02:03 UTC+900"
+      ],
     }
   
     test_times.each_pair do |expected, probes|
       probes.each do |probe|
         @ch.run(probe)
         assert_match /^\d{4}-\d{2}-\d{2} #{expected} [+-]\d{2}:\d{2}$/, @ch.output
+      end
+    end
+  end
+  
+  
+  def test_date_time
+    test_date_times = {
+      "2001-03-04 12:34:56.000 +09:00" => [
+        "2001-03-04 12:34:56.000 +09:00",
+        "Sun Mar  4 12:34:56 JST 2001"
+      ],
+      "1970-01-01 05:30:41.123 +05:30" => [
+        "1970-01-01 05:30:41.123 +05:30",
+        "5:30:41.123am IST January 1, 1970"
+      ],
+      "1970-01-01 00:00:00.000 +00:00" => [
+        "1970-01-01 00:00:00.000 +00:00",
+        "1970-01-01T00:00:00.000Z",
+        "Jan 1 1970 00:00:00UTC"
+      ],
+      "1999-05-24 23:59:59.000 -08:00" => [
+        # "1999-05-24 23:59:59.000 -08:00",
+        "24/05/1999 23:59:59 PST",
+        "24 May, 1999 11:59:59.000p.m. PST",
+      ]
+    }
+    
+    test_date_times.each_pair do |expected, probes|
+      probes.each do |probe|
+        @ch.run(probe)
+        assert_equal expected, @ch.output.chomp
       end
     end
   end

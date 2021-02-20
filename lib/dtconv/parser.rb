@@ -12,17 +12,18 @@ module Dtconv
     MONTHS_LONG = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER']
     MONTHS = [MONTHS_SHORT, MONTHS_LONG].flatten
     MONTHS_LIST = MONTHS.join('|')
-    REGEX_YMD = /(\d+)\W{,2}(\d+)\W{,2}(\d+)/
+    REGEX_YMD = /(\d+)\W{1,2}(\d+)\W{1,2}(\d+)/
     REGEX_YMOND = /(\d+)\W{,2}(#{MONTHS_LIST})\W{,2}(\d+)/
     REGEX_MONDY = /(#{MONTHS_LIST})\W{,2}([0-9]+)\W+([0-9]+)/
     REGEX_S8 = /(\d{8})/
     
     
     def extract_date(text_no_time)
-    
+      # $stderr.puts "NOTIME=[#{text_no_time}]"
       dt_text = text_no_time
       
       if REGEX_YMD.match(dt_text)
+        # $stderr.puts "YMD"
         n1 = $1.to_i
         n2 = $2.to_i
         n3 = $3.to_i
@@ -39,6 +40,7 @@ module Dtconv
       end
       
       if REGEX_YMOND.match(dt_text)
+        # $stderr.puts "YMOND"
         n1 = $1.to_i
         n2 = (MONTHS.index($2) % 12) + 1
         n3 = $3.to_i
@@ -51,6 +53,7 @@ module Dtconv
       end
       
       if REGEX_MONDY.match(dt_text)
+        # $stderr.puts "MONDY"
         n1 = (MONTHS.index($1) % 12) + 1
         n2 = $2.to_i
         n3 = $3.to_i
@@ -78,6 +81,8 @@ module Dtconv
     
     
     ZONE_OFFSETS = {
+      "PST" => "-08:00",
+      "Z" => "+00:00",
       "UTC" => "+00:00",
       "IST" => "+05:30",
       "JST" => "+09:00"
@@ -86,8 +91,19 @@ module Dtconv
     def zone2offset(time_zone)
       return ZONE_OFFSETS[time_zone] || ""
     end
-
-    REGEX_S6 = /(\d{8})/
+    
+    def ampm_zone(text)
+      ampm = $5 || ""
+        if ampm == "PM"
+          h = (h + 12) % 24
+        end
+        
+        z = $6
+        if !z.nil?
+          offset = zone2offset(z)
+        end
+        
+    end
 
     def normalize(text)
       normalized = ""
@@ -119,7 +135,7 @@ module Dtconv
       return [offset, text]
     end
 
-    REGEX_TIME = /([0-9]{1,2}):([0-9]{1,2}):?([0-9]{1,2})?(\.[0-9]+)?[^0-9]?(AM|PM)?[ ]?([A-Z]{1,4})?/
+    REGEX_TIME = /([0-9]{1,2}):([0-9]{1,2}):?([0-9]{1,2})?(\.[0-9]+)?[^0-9A-Z]?(AM|PM)? {,5}([A-Z]{1,4})?/
 
     def extract_time(text_no_offset)
       text_no_time = text_no_offset.sub(REGEX_TIME, " ")
@@ -171,7 +187,7 @@ module Dtconv
         dt = Time.parse(time_only)
       else
         iso8601 = sprintf("%04d-%02d-%02dT%02d:%02d:%02d%s%s", year, month, day, hour, minute, second, decimal, offset)
-        $stderr.puts iso8601
+        # $stderr.puts iso8601
         dt = Time.iso8601(iso8601)
       end
       
