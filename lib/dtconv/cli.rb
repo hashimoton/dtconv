@@ -6,6 +6,7 @@ require 'dtconv/parser'
 module Dtconv
 
   class Cli
+    OUTPUT_FORMAT = "%Y-%m-%d %H:%M:%S.%3N %:z"
   
     def opt_parse(argv)
       opts = {}
@@ -53,7 +54,7 @@ module Dtconv
         output_text = output_dt.strftime(opts[:f])
       else
         # Need a formatter?
-        output_text = output_dt.to_s
+        output_text = output_dt.strftime(OUTPUT_FORMAT)
       end
       
       puts output_text
