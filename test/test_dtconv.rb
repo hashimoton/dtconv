@@ -43,6 +43,9 @@ class TestDtconv < MiniTest::Test
         "2001 MAR 04",
         "4.Mar.2001",
         "04, mar. 2001",
+        # D MON Y
+        "4-Mar-2001",
+        "04-March-2001",
         # MON D Y
         "Mar. 4 2001",
         # MON Y D

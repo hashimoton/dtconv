@@ -120,9 +120,11 @@ module Dtconv
 
       if text =~ /([+-])([0-9]{3,4})([^0-9]|$)/
         offset_raw = "#{$1}#{$2}"
-        offset4 = $2.rjust(4, '0')
-        offset = "#{$1}#{offset4[0, 2]}:#{offset4[2, 2]}"
-        return [offset, text.sub(offset_raw, " ")]
+        if offset_raw.to_i.abs <= 1400 # Kiritimati
+          offset4 = $2.rjust(4, '0')
+          offset = "#{$1}#{offset4[0, 2]}:#{offset4[2, 2]}"
+          return [offset, text.sub(offset_raw, " ")]
+        end
       end
 
       if text =~ /([+-])([0-9]{1,2}):([0-9]{2})([^0-9]|$)/
