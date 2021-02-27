@@ -23,7 +23,7 @@ module Dtconv
       dt_text = text_no_time
       
       if REGEX_YMD.match(dt_text)
-        # $stderr.puts "YMD"
+        #$stderr.puts "YMD"
         n1 = $1.to_i
         n2 = $2.to_i
         n3 = $3.to_i
