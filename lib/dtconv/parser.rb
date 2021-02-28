@@ -18,65 +18,68 @@ module Dtconv
     REGEX_S8 = /(\d{8})/
     
     
-    def extract_date(text_no_time)
-      # $stderr.puts "NOTIME=[#{text_no_time}]"
-      dt_text = text_no_time
+    def extract_date(text)
+      # $stderr.puts "NOTIME=[#{text}]" 
       
-      if REGEX_YMD.match(dt_text)
+      rest_ymd = text.sub(REGEX_YMD, " ")
+      if text != rest_ymd
         #$stderr.puts "YMD"
         n1 = $1.to_i
         n2 = $2.to_i
         n3 = $3.to_i
         
         if 1 <= n2 && n2 <= 12 && 1 <= n3 && n3 <= 31
-          return [n1, n2, n3]
+          return [n1, n2, n3, rest_ymd]
         elsif 1 <= n1 && n1 <= 12 && 1 <= n2 && n2 <= 31
-          return [n3, n1, n2]
+          return [n3, n1, n2, rest_ymd]
         elsif 1 <= n1 && n1 <= 31 && 1 <= n2 && n2 <= 12
-          return [n3, n2, n1]
+          return [n3, n2, n1, rest_ymd]
         elsif 1 <= n2 && n2 < 31 && 1 <= n3 && n3 <= 12
-          return [n1, n3, n2]
+          return [n1, n3, n2, rest_ymd]
         end
       end
       
-      if REGEX_YMOND.match(dt_text)
+      rest_ymond = text.sub(REGEX_YMOND, " ")
+      if text != rest_ymond
         # $stderr.puts "YMOND"
         n1 = $1.to_i
         n2 = (MONTHS.index($2) % 12) + 1
         n3 = $3.to_i
         
         if 1 <= n3 && n3 <= 31
-          return [n1, n2, n3]
+          return [n1, n2, n3, rest_ymond]
         elsif 1<= n1 && n1 < 31
-          return [n3, n2, n1]
+          return [n3, n2, n1, rest_ymond]
         end
       end
       
-      if REGEX_MONDY.match(dt_text)
+      rest_mondy = text.sub(REGEX_MONDY, " ")
+      if text != rest_mondy
         # $stderr.puts "MONDY"
         n1 = (MONTHS.index($1) % 12) + 1
         n2 = $2.to_i
         n3 = $3.to_i
         
         if 1 <= n2 && n2 <= 31
-          return [n3, n1, n2]
+          return [n3, n1, n2, rest_mondy]
         elsif 1<= n3 && n3 < 31
-          return [n2, n1, n3]
+          return [n2, n1, n3, rest_mondy]
         end
       end
       
-      if REGEX_S8.match(dt_text)
+      rest_s8 = text.sub(REGEX_S8, " ")
+      if text != rest_s8
         if $1.size == 8
           n1 = $1[0,4].to_i
           n2 = $1[4,2].to_i
           n3 = $1[6,2].to_i
           if 1 <= n2 && n2 <= 12 && 1 <= n3 && n3 <= 31
-            return [n1, n2, n3]
+            return [n1, n2, n3, rest_s8]
           end
         end
       end
       
-      return [0, 0, 0, ""]
+      return [0, 0, 0, text]
     end
     
     
@@ -139,8 +142,8 @@ module Dtconv
 
     REGEX_TIME = /([0-9]{1,2}):([0-9]{1,2}):?([0-9]{1,2})?(\.[0-9]+)?[^0-9A-Z]?(AM|PM)? {,5}([A-Z]{1,4})?/
 
-    def extract_time(text_no_offset)
-      text_no_time = text_no_offset.sub(REGEX_TIME, " ")
+    def extract_time(text)
+      text_no_time = text.sub(REGEX_TIME, " ")
       
       if !$1.nil?
         h = $1.to_i
@@ -171,14 +174,15 @@ module Dtconv
     
     
     def parse(text)
-      offset, text_no_offset = extract_offset(normalize(text))
-      hour, minute, second, decimal, offset_tz, text_no_time = extract_time(text_no_offset)
+      hour, minute, second, decimal, offset_tz, text_no_time = extract_time(normalize(text))
+      year, month, day, text_no_date = extract_date(text_no_time)
       
+      offset, rest = extract_offset(text_no_date)
       if offset.nil? || offset.empty?
         offset = offset_tz
       end
       
-      year, month, day, rest = extract_date(text_no_time)
+      
       # Epoch? (sec/msec)
       # epoch = extract_epoch(rest)
       
@@ -193,7 +197,6 @@ module Dtconv
         dt = Time.iso8601(iso8601)
       end
       
-
       return dt
     end
     
