@@ -195,6 +195,12 @@ class TestDtconv < MiniTest::Test
     @ch.run('-p %y=%m=%d -f %Y/%m/%d 01=02=03')
     assert_equal "2001/02/03", @ch.output.chomp
   end
+  
+  
+  def test_output_time_zone
+    @ch.run('-o +05:30 2021-02-28 19:30:45z')
+    assert_equal "2021-03-01 01:00:45.000 +05:30", @ch.output.chomp
+  end
 
 end
 

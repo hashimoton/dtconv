@@ -2,6 +2,7 @@
 
 require 'optparse'
 require 'dtconv/parser'
+require 'dtconv/converter'
 
 module Dtconv
 
@@ -21,6 +22,9 @@ module Dtconv
             "Format of input string") {|v| opts[:p] = v}
           opt.on('-f=OUTPUT_FORMAT',
             "Format of output string") {|v| opts[:f] = v}
+          
+          opt.on('-o=OUTPUT_TIMEZONE',
+            "Timezone or UTC offset for output") {|v| opts[:o] = v}
           
           opt.order!(argv)
         rescue => e
@@ -47,8 +51,12 @@ module Dtconv
         end
       end
       
-      # TODO: Perform timezone conversion / calculation
-      output_dt = input_dt
+      if opts[:o]
+        converter = Dtconv::Converter.new
+        output_dt = converter.change_time_zone(input_dt, opts[:o])
+      else
+        output_dt = input_dt
+      end
       
       if opts[:f]
         output_text = output_dt.strftime(opts[:f])
