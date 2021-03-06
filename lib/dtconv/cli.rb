@@ -10,16 +10,6 @@ module Dtconv
   
     def opt_parse(argv)
       opts = {}
-#      input_opts = []
-#      while arg = argv.shift
-#        if arg.start_with?('-')
-#          input_opts.push(arg)
-#        else
-#         argv.unshift(arg)
-#          break
-#       end
-#      end
-      
       
       OptionParser.new do |opt|
         begin
