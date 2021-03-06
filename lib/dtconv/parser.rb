@@ -173,6 +173,23 @@ module Dtconv
     end
     
     
+    def extract_epoch_time(text)
+      dt = nil
+      
+      if text =~ /(\d{9,})/
+        elapsed = $1
+        digit = elapsed.size
+        if digit >= 12 
+           dt = Time.strptime(elapsed, "%Q")
+        elsif digit >= 9
+           dt = Time.strptime(elapsed, "%s")
+         end
+      end
+      
+      return dt
+    end
+    
+    
     def parse(text)
       hour, minute, second, decimal, offset_tz, text_no_time = extract_time(normalize(text))
       year, month, day, text_no_date = extract_date(text_no_time)
@@ -182,15 +199,12 @@ module Dtconv
         offset = offset_tz
       end
       
-      
-      # Epoch? (sec/msec)
-      # epoch = extract_epoch(rest)
-      
-      # dt = {year: year, month: month, day: day, hour: hour, minute: minute, second: second,
-      #   decimal: decimal, offset:offset, rest: rest}
       if year == 0 || month == 0 || day == 0
-        time_only = "%02d:%02d:%02d%s%s" % [hour, minute, second, decimal, offset]
-        dt = Time.parse(time_only)
+        dt = extract_epoch_time(text)
+        if dt.nil?
+          time_only = "%02d:%02d:%02d%s%s" % [hour, minute, second, decimal, offset]
+          dt = Time.parse(time_only)
+        end
       else
         iso8601 = sprintf("%04d-%02d-%02dT%02d:%02d:%02d%s%s", year, month, day, hour, minute, second, decimal, offset)
         # $stderr.puts iso8601

@@ -147,6 +147,30 @@ class TestDtconv < MiniTest::Test
   end
   
   
+  def test_epoch_time
+    test_digits = {
+      "2001-03-04 12:34:56.000 +09:00" => [
+        "983676896",
+        "983676896000"
+      ],
+      "2021-03-04 12:34:56.000 +09:00" => [
+        "1614828896",
+        "1614828896000"
+      ],
+      "2021-03-04 12:34:56.789 +09:00" => [
+        "1614828896789"
+      ],
+    }
+    
+    test_digits.each_pair do |expected, probes|
+      probes.each do |probe|
+        @ch.run(probe)
+        assert_equal expected, @ch.output.chomp
+      end
+    end
+  end
+  
+  
   def test_input_format
     @ch.run("-p %y=%m=%d 01=02=03")
     assert_match /^2001-02-03/, @ch.output.chomp
