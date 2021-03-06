@@ -148,6 +148,8 @@ class TestDtconv < MiniTest::Test
   
   
   def test_epoch_time
+    ENV["TZ"] = "JST-9"
+    
     test_digits = {
       "2001-03-04 12:34:56.000 +09:00" => [
         "983676896",
