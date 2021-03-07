@@ -198,7 +198,25 @@ class TestDtconv < MiniTest::Test
   
   
   def test_output_time_zone
+    @ch.run('-o +00:00 2021-02-28 19:30:45z')
+    assert_equal "2021-02-28 19:30:45.000 +00:00", @ch.output.chomp
+    
+    @ch.run('-o z 2021-02-28 19:30:45z')
+    assert_equal "2021-02-28 19:30:45.000 +00:00", @ch.output.chomp
+  
     @ch.run('-o +05:30 2021-02-28 19:30:45z')
+    assert_equal "2021-03-01 01:00:45.000 +05:30", @ch.output.chomp
+    
+    @ch.run('-o IST 2021-02-28 19:30:45z')
+    assert_equal "2021-03-01 01:00:45.000 +05:30", @ch.output.chomp
+    
+    @ch.run('-o -800 2021-02-28 19:30:45z')
+    assert_equal "2021-02-28 11:30:45.000 -08:00", @ch.output.chomp
+    
+    @ch.run('-o Z 2021-03-01 04:30:45 JST')
+    assert_equal "2021-02-28 19:30:45.000 +00:00", @ch.output.chomp
+    
+    @ch.run('-o +530 2021-03-01 04:30:45 JST')
     assert_equal "2021-03-01 01:00:45.000 +05:30", @ch.output.chomp
   end
 

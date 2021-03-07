@@ -39,11 +39,11 @@ module Dtconv
     def main(argv)
       opts = opt_parse(argv)
       input_text = argv.join(" ")
+      parser = Dtconv::Parser.new
       
       if input_text.gsub(" ", "").empty?
         input_dt = Time.now
       else
-        parser = Dtconv::Parser.new
         if opts[:p]
           input_dt = parser.strptime(input_text, opts[:p])
         else
@@ -51,11 +51,21 @@ module Dtconv
         end
       end
       
-      if opts[:o]
-        converter = Dtconv::Converter.new
-        output_dt = converter.change_time_zone(input_dt, opts[:o])
-      else
+      output_offset = opts[:o]
+      if output_offset.nil? || output_offset.empty?
         output_dt = input_dt
+      else
+        offset, _ = parser.extract_offset(output_offset)
+        if offset.empty?
+          offset, _ = parser.zone2offset(output_offset.upcase)
+        end
+        
+        if offset.empty?
+          output_dt = input_dt
+        else
+          converter = Dtconv::Converter.new
+          output_dt = converter.change_time_zone(input_dt, offset)
+        end
       end
       
       if opts[:f]
