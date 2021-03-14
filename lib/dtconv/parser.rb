@@ -140,7 +140,7 @@ module Dtconv
       return [offset, text]
     end
 
-    REGEX_TIME = /([0-9]{1,2}):([0-9]{1,2}):?([0-9]{1,2})?(\.[0-9]+)?[^0-9A-Z]?(AM|PM)? {,5}([A-Z]{1,4})?/
+    REGEX_TIME = /([0-9]{1,2}):([0-9]{1,2}):?([0-9]{1,2})?(\.[0-9]+)?[^0-9A-Z\-\+]?(AM|PM)? {,5}([A-Z]{1,4})?/
 
     def extract_time(text)
       text_no_time = text.sub(REGEX_TIME, " ")
