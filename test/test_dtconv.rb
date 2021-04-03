@@ -163,6 +163,9 @@ class TestDtconv < MiniTest::Test
       "2021-03-04 12:34:56.789 +09:00" => [
         "1614828896789"
       ],
+      "1976-05-03 03:01:41.000 +09:00" => [
+        "199908101"
+      ],
     }
     
     test_digits.each_pair do |expected, probes|

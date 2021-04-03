@@ -67,15 +67,13 @@ module Dtconv
         end
       end
       
-      rest_s8 = text.sub(REGEX_S8, " ")
-      if text != rest_s8
-        if $1.size == 8
-          n1 = $1[0,4].to_i
-          n2 = $1[4,2].to_i
-          n3 = $1[6,2].to_i
-          if 1 <= n2 && n2 <= 12 && 1 <= n3 && n3 <= 31
-            return [n1, n2, n3, rest_s8]
-          end
+      rest_s8 = text.sub(/(\d{8,9})/, " ")
+      if text != rest_s8 && $1.size == 8
+        n1 = $1[0,4].to_i
+        n2 = $1[4,2].to_i
+        n3 = $1[6,2].to_i
+        if 1 <= n2 && n2 <= 12 && 1 <= n3 && n3 <= 31
+          return [n1, n2, n3, rest_s8]
         end
       end
       
