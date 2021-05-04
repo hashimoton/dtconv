@@ -207,7 +207,13 @@ class TestDtconv < MiniTest::Test
     
     @ch.run('-o z 2021-02-28 19:30:45z')
     assert_equal "2021-02-28 19:30:45.000 +00:00", @ch.output.chomp
-  
+    
+    @ch.run('-o UTC 2021-02-28 19:30:45+0900')
+    assert_equal "2021-02-28 10:30:45.000 +00:00", @ch.output.chomp
+    
+    @ch.run('-o GMT 2021-02-28 19:30:45+0900')
+    assert_equal "2021-02-28 10:30:45.000 +00:00", @ch.output.chomp
+    
     @ch.run('-o +05:30 2021-02-28 19:30:45z')
     assert_equal "2021-03-01 01:00:45.000 +05:30", @ch.output.chomp
     
