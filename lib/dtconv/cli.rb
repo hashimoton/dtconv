@@ -3,6 +3,7 @@
 require 'optparse'
 require 'dtconv/parser'
 require 'dtconv/converter'
+require 'dtconv/time_zone'
 
 module Dtconv
 
@@ -57,7 +58,7 @@ module Dtconv
       else
         offset, _ = parser.extract_offset(output_offset)
         if offset.empty?
-          offset, _ = parser.zone2offset(output_offset.upcase)
+          offset, _ = Dtconv::TimeZone.zone2offset(output_offset.upcase)
         end
         
         if offset.empty?

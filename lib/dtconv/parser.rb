@@ -2,6 +2,7 @@
 
 require 'optparse'
 require 'time'
+require 'dtconv/time_zone'
 
 module Dtconv
 
@@ -81,19 +82,6 @@ module Dtconv
     end
     
     
-    ZONE_OFFSETS = {
-      "PST" => "-08:00",
-      "Z" => "+00:00",
-      "UTC" => "+00:00",
-      "GMT" => "+00:00",
-      "IST" => "+05:30",
-      "JST" => "+09:00"
-    }
-
-    def zone2offset(time_zone)
-      return ZONE_OFFSETS[time_zone] || ""
-    end
-    
     def ampm_zone(text)
       ampm = $5 || ""
         if ampm == "PM"
@@ -102,7 +90,7 @@ module Dtconv
         
         z = $6
         if !z.nil?
-          offset = zone2offset(z)
+          offset = Dtconv::TimeZone.zone2offset(z)
         end
         
     end
@@ -162,7 +150,7 @@ module Dtconv
         
         z = $6
         if !z.nil?
-          offset = zone2offset(z)
+          offset = Dtconv::TimeZone.zone2offset(z)
         end
         
         return [h, m, s, decimal, offset, text_no_time]
