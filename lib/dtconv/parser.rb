@@ -215,6 +215,8 @@ module Dtconv
         dt = Time.iso8601(iso8601)
       end
       
+      dt.offset = offset
+      
       return dt
     end
     

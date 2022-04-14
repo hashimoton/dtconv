@@ -1,7 +1,7 @@
 # coding: utf-8
 
 module Dtconv
-  VERSION = "0.3.1"
+  VERSION = "0.4.0"
   
   module_path = File.expand_path(File.dirname(__FILE__))
   $LOAD_PATH.push(module_path)

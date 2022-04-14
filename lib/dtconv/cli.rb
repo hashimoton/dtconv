@@ -26,6 +26,8 @@ module Dtconv
           
           opt.on('-o=OUTPUT_TIMEZONE',
             "Timezone or UTC offset for output") {|v| opts[:o] = v}
+          opt.on('-r=ROUND_DOWN_UNIT',
+            "Round down unit like 1s, 5m, 3h, etc.") {|v| opts[:r] = v}
           
           opt.order!(argv)
         rescue => e
@@ -41,6 +43,7 @@ module Dtconv
       opts = opt_parse(argv)
       input_text = argv.join(" ")
       parser = Dtconv::Parser.new
+      converter = Dtconv::Converter.new
       
       if input_text.gsub(" ", "").empty?
         input_dt = Time.now
@@ -51,6 +54,8 @@ module Dtconv
           input_dt = parser.parse(input_text)
         end
       end
+      
+      input_dt = converter.round(input_dt, opts[:r])
       
       output_offset = opts[:o]
       if output_offset.nil? || output_offset.empty?
@@ -64,7 +69,6 @@ module Dtconv
         if offset.empty?
           output_dt = input_dt
         else
-          converter = Dtconv::Converter.new
           output_dt = converter.change_time_zone(input_dt, offset)
         end
       end

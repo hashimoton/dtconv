@@ -1,6 +1,10 @@
 # coding: utf-8
 
 
+class Time 
+  attr_accessor :offset
+end
+
 module Dtconv
 
   class TimeZone

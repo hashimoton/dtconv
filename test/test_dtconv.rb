@@ -249,6 +249,27 @@ class TestDtconv < MiniTest::Test
     @ch.run('-o +530 2021-03-01 04:30:45 JST')
     assert_equal "2021-03-01 01:00:45.000 +05:30", @ch.output.chomp
   end
+  
+  def test_rounding
+    @ch.run('-r 1s 2021-05-13 19:31:45.123z')
+    assert_equal "2021-05-13 19:31:45.000 +00:00", @ch.output.chomp
+    
+    @ch.run('-r 10s 2021-05-13 19:31:45.123z')
+    assert_equal "2021-05-13 19:31:40.000 +00:00", @ch.output.chomp
+    
+    @ch.run('-r 1m 2021-05-13 19:31:45.123+09:00')
+    assert_equal "2021-05-13 19:31:00.000 +09:00", @ch.output.chomp
+    
+    @ch.run('-r 15m 2021-05-13 19:53:45.123-05:30')
+    assert_equal "2021-05-13 19:45:00.000 -05:30", @ch.output.chomp
+    
+    @ch.run('-r 1h 2021-05-13 19:53:45.123 UTC')
+    assert_equal "2021-05-13 19:00:00.000 +00:00", @ch.output.chomp
+    
+    @ch.run('-r 6h 2021-05-13 19:53:45.123 JST')
+    assert_equal "2021-05-13 18:00:00.000 +09:00", @ch.output.chomp
+
+  end
 
 end
 
