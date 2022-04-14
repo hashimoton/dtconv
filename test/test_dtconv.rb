@@ -2,6 +2,7 @@
 
 require 'minitest'
 require 'minitest/autorun'
+require 'time'
 require './command_helper.rb'
 
 
@@ -139,6 +140,25 @@ class TestDtconv < MiniTest::Test
       ],
     }
     
+    test_date_times.each_pair do |expected, probes|
+      probes.each do |probe|
+        @ch.run(probe)
+        assert_equal expected, @ch.output.chomp
+      end
+    end
+  end
+  
+  
+  def test_incomplete_date_time
+    ENV["TZ"] = "JST-9"
+    now = Time.new
+    
+    test_date_times = {
+      "#{now.year}-09-30 04:31:00.000 +09:00" => [
+        "9/30 04:31"
+      ]
+    }
+      
     test_date_times.each_pair do |expected, probes|
       probes.each do |probe|
         @ch.run(probe)

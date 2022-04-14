@@ -13,9 +13,13 @@ module Dtconv
     MONTHS_LONG = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER']
     MONTHS = [MONTHS_SHORT, MONTHS_LONG].flatten
     MONTHS_LIST = MONTHS.join('|')
+    
     REGEX_YMD = /(\d+)\W{1,2}(\d+)\W{1,2}(\d+)/
     REGEX_YMOND = /(\d+)\W{,2}(#{MONTHS_LIST})\W{,2}(\d+)/
     REGEX_MONDY = /(#{MONTHS_LIST})\W{,2}([0-9]+)\W+([0-9]+)/
+    
+    REGEX_MD = /(\d{1,2})\W{1,2}(\d{1,2})/
+    
     REGEX_S8 = /(\d{8})/
     
     
@@ -67,6 +71,19 @@ module Dtconv
           return [n2, n1, n3, rest_mondy]
         end
       end
+      
+      rest_md = text.sub(REGEX_MD, " ")
+      if text != rest_md
+        # $stderr.puts "MD"
+        n1 = Time.new.year
+        n2 = $1.to_i
+        n3 = $2.to_i
+        
+        if 1 <= n2 && n2 <= 12 && 1 <= n3 && n3 <= 31
+          return [n1, n2, n3, rest_md]
+        end
+      end
+      
       
       rest_s8 = text.sub(/(\d{8,9})/, " ")
       if text != rest_s8 && $1.size == 8
