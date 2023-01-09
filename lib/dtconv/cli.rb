@@ -20,9 +20,9 @@ module Dtconv
           opt.separator("\nOptions:")
           
           opt.on('-p=INPUT_FORMAT',
-            "Format of input string") {|v| opts[:p] = v}
+            "Format of input string, see https://docs.ruby-lang.org/ja/latest/method/Date/s/_strptime.html") {|v| opts[:p] = v}
           opt.on('-f=OUTPUT_FORMAT',
-            "Format of output string") {|v| opts[:f] = v}
+            "Format of output string, see https://docs.ruby-lang.org/ja/latest/method/Date/s/_strptime.html") {|v| opts[:f] = v}
           
           opt.on('-o=OUTPUT_TIMEZONE',
             "Timezone or UTC offset for output") {|v| opts[:o] = v}
